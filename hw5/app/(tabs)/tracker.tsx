@@ -1,38 +1,55 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { observer } from 'mobx-react-lite';
+import { makeAutoObservable } from 'mobx';
 
-export default function App() {
-    const [tasks, setTasks] = useState([]);
-    const [input, setInput] = useState('');
-]
-    const addTask = () => {
-        if (input.trim()) {
-            setTasks([...tasks, { id: Date.now().toString(), text: input, completed: false }]);
-            setInput('');
+// Хранилище для задач
+class TaskStore {
+    tasks = [];
+
+    constructor() {
+        makeAutoObservable(this);
+    }
+
+    addTask(text) {
+        if (text.trim()) {
+            this.tasks.push({ id: Date.now().toString(), text, completed: false });
         }
-    };
+    }
 
-    const deleteTask = (id) => {
-        setTasks(tasks.filter((task) => task.id !== id));
-    };
+    deleteTask(id) {
+        this.tasks = this.tasks.filter((task) => task.id !== id);
+    }
 
-    const toggleTaskCompletion = (id) => {
-        setTasks(
-            tasks.map((task) =>
-                task.id === id ? { ...task, completed: !task.completed } : task
-            )
-        );
+    toggleTaskCompletion(id) {
+        const task = this.tasks.find((task) => task.id === id);
+        if (task) {
+            task.completed = !task.completed;
+        }
+    }
+}
+
+// Создание экземпляра хранилища
+const taskStore = new TaskStore();
+
+// Главный компонент
+const App = observer(() => {
+    const [input, setInput] = useState('');
+
+    const addTask = () => {
+        taskStore.addTask(input);
+        setInput('');
     };
 
     const TaskItem = ({ item }) => (
         <View style={styles.taskContainer}>
             <TouchableOpacity
                 style={[styles.taskTextContainer, item.completed && styles.completedTask]}
-                onPress={() => toggleTaskCompletion(item.id)}
+                onPress={() => taskStore.toggleTaskCompletion(item.id)}
             >
                 <Text style={styles.taskText}>{item.text}</Text>
             </TouchableOpacity>
-            <Button title="Удалить" color="red" onPress={() => deleteTask(item.id)} />
+            <Button title="Удалить" color="red" onPress={() => taskStore.deleteTask(item.id)} />
         </View>
     );
 
@@ -47,14 +64,16 @@ export default function App() {
             />
             <Button title="Добавить" onPress={addTask} />
             <FlatList
-                data={tasks}
+                data={taskStore.tasks.slice()} // Преобразуем MobX-объект в обычный массив
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <TaskItem item={item} />}
                 style={styles.list}
             />
         </View>
     );
-}
+});
+
+export default App;
 
 const styles = StyleSheet.create({
     container: {
@@ -101,3 +120,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
+
