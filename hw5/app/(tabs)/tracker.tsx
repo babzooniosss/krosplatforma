@@ -4,7 +4,7 @@ import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet }
 export default function App() {
     const [tasks, setTasks] = useState([]);
     const [input, setInput] = useState('');
-]
+
     const addTask = () => {
         if (input.trim()) {
             setTasks([...tasks, { id: Date.now().toString(), text: input, completed: false }]);
