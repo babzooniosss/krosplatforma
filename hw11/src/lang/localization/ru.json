@@ -1,0 +1,15 @@
+{
+  "common": {
+    "toggleTheme": "Переключить тему",
+    "dark": "Тёмная",
+    "light": "Светлая",
+    "viewCompleted": "Посмотреть завершенные задачи",
+    "complete": "Завершить",
+    "confirmTitle": "Подтверждение",
+    "confirmMessage": "Точно завершить?",
+    "yes": "Да",
+    "no": "Нет",
+    "completedTasks": "Завершенные задачи",
+    "toggleLanguage": "Переключить язык"
+  }
+}

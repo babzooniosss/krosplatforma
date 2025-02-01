@@ -1,0 +1,15 @@
+{
+  "common": {
+    "toggleTheme": "Toggle Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "viewCompleted": "View Completed Tasks",
+    "complete": "Complete",
+    "confirmTitle": "Confirmation",
+    "confirmMessage": "Are you sure to complete?",
+    "yes": "Yes",
+    "no": "No",
+    "completedTasks": "Completed Tasks",
+    "toggleLanguage": "Switch Language"
+  }
+}
