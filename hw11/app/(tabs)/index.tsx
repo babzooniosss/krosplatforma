@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -6,6 +6,7 @@ import {
     ScrollView,
     StyleSheet,
     Alert,
+    ActivityIndicator
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Modalize } from 'react-native-modalize';
@@ -13,17 +14,27 @@ import { observer } from 'mobx-react-lite';
 import itemStore from '../../src/store/ItemStore';
 import { ThemeProvider, useTheme } from '@/src/modules/theme/ThemeProvider';
 import { Colors } from '@/src/styles/Colors';
-import { useTranslation } from 'react-i18next'; // For i18next integration
-import LangStore from '@/src/lang/LangStore'; // Import LangStore
+import { useTranslation } from 'react-i18next';
+import LangStore from '@/src/lang/LangStore';
+import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons'; // Импорт иконок
 
 const langStore = new LangStore();
 
 const AppContent = observer(() => {
     const modalizeRef = useRef<Modalize>(null);
     const { theme, toggleTheme } = useTheme();
-    const { t } = useTranslation(); // Translation hook
+    const { t } = useTranslation();
+    const [fontsLoaded, setFontsLoaded] = useState(false);
 
     useEffect(() => {
+        const loadFonts = async () => {
+            await Font.loadAsync({
+                'CustomFont': require('../../assets/fonts/CustomFont.ttf'),
+            });
+            setFontsLoaded(true);
+        };
+        loadFonts();
         itemStore.getItems();
     }, []);
 
@@ -62,6 +73,7 @@ const AppContent = observer(() => {
         },
         text: {
             color: Colors.textPrimary[theme],
+            fontFamily: 'CustomFont',
         },
         modalContent: {
             padding: 16,
@@ -71,6 +83,7 @@ const AppContent = observer(() => {
             fontWeight: 'bold',
             marginBottom: 16,
             color: Colors.textPrimary[theme],
+            fontFamily: 'CustomFont',
         },
         completedItem: {
             marginBottom: 10,
@@ -79,6 +92,10 @@ const AppContent = observer(() => {
             borderRadius: 5,
         },
     });
+
+    if (!fontsLoaded) {
+        return <ActivityIndicator size="large" color={Colors.textPrimary[theme]} />;
+    }
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -102,6 +119,7 @@ const AppContent = observer(() => {
                 <ScrollView>
                     {itemStore.items.map((item) => (
                         <View key={item.id} style={styles.item}>
+                            <Ionicons name="checkmark-circle" size={24} color={Colors.textPrimary[theme]} />
                             <Text style={styles.text}>{item.title}</Text>
                             <Button
                                 title={t('common.complete')}
@@ -121,6 +139,7 @@ const AppContent = observer(() => {
                                     key={completedItem.id}
                                     style={styles.completedItem}
                                 >
+                                    <Ionicons name="checkmark-done-circle" size={24} color={Colors.textPrimary[theme]} />
                                     <Text style={styles.text}>
                                         {completedItem.title}
                                     </Text>
